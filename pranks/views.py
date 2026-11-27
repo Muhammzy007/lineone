@@ -186,7 +186,7 @@ def _send(to, subject, template, ctx):
         return False
     try:
         body = render_to_string(template, ctx)
-        sent = send_mail(subject, "", settings.DEFAULT_FROM_EMAIL, [to], html_message=body, fail_silently=False)
+        sent = send_mail(subject, "", settings.DEFAULT_FROM_EMAIL, [to], html_message=body, fail_silently=True)
         return bool(sent)
     except Exception as exc:
         logger.exception("Email send failed to %s: %s", to, exc)
@@ -214,10 +214,16 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            get_profile(user)
+            try:
+                get_profile(user)
+            except Exception as exc:
+                logger.exception("Profile creation failed for %s: %s", user.username, exc)
             login(request, user)
-            _send(user.email, f"Welcome to {settings.APP_NAME}", "email/welcome.html",
-                  {"user": user, "app_name": settings.APP_NAME})
+            try:
+                _send(user.email, f"Welcome to {settings.APP_NAME}", "email/welcome.html",
+                      {"user": user, "app_name": settings.APP_NAME})
+            except Exception:
+                pass
             messages.success(request, "Welcome! Your account is ready.")
             return redirect("payment")
     else:
