@@ -1,0 +1,14 @@
+{% extends "pranks/base.html" %}
+{% load static %}
+{% block title %}Private call{% endblock %}
+{% block meta %}
+<meta property="og:title" content="Private call from {{ prank.caller_name }}">
+<meta property="og:description" content="Tap to open the private call">
+{% endblock %}
+{% block body %}
+<main class="fixed inset-0 flex items-center justify-center bg-black">
+  <div id="screen" class="relative h-full w-full overflow-hidden"></div>
+</main>
+{{ data|json_script:"prank-data" }}
+<script src="{% static 'pranks/call.js' %}"></script>
+{% endblock %}

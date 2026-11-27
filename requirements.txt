@@ -1,0 +1,10 @@
+Django>=4.2
+tzdata
+Pillow
+gunicorn
+twilio
+# psycopg2-binary  # uncomment on Render, not on Termux
+gunicorn
+dj-database-url
+whitenoise
+psycopg2-binary

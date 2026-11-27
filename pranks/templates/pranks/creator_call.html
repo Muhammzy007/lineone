@@ -1,0 +1,18 @@
+{% extends "pranks/base.html" %}
+{% load static %}
+{% block title %}Creator call — {{ prank.caller_name }}{% endblock %}
+{% block body %}
+<main class="fixed inset-0 flex items-center justify-center bg-black">
+  <div id="screen" class="relative h-full w-full overflow-hidden"></div>
+</main>
+{{ data|json_script:"prank-data" }}
+<script>
+  window.PRANK_ROLE = "creator";
+  // CSRF helper for signalling POSTs
+  window.getCSRFToken = function() {
+    const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : "";
+  };
+</script>
+<script src="{% static 'pranks/call.js' %}"></script>
+{% endblock %}

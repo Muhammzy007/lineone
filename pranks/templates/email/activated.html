@@ -1,0 +1,23 @@
+<!doctype html>
+<html><body style="margin:0;padding:0;background:#0b1220;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0b1220;padding:32px 16px;">
+  <tr><td align="center">
+    <table width="100%" style="max-width:480px;background:#0f172a;border:1px solid #10b981;border-radius:20px;padding:32px;">
+      <tr><td>
+        <p style="margin:0 0 8px;font-size:14px;color:#10b981;">{{ app_name }}</p>
+        <h1 style="margin:0 0 16px;font-size:24px;">Your access is active</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#cbd5e1;">
+          Hi {{ user.username }}, your {{ app_name }} access has been activated.
+        </p>
+        <p style="margin:0 0 24px;font-size:15px;color:#cbd5e1;">
+          Expires: <strong>{{ expires|date:"M j, Y H:i" }} UTC</strong>
+        </p>
+        <p style="margin:0;font-size:13px;color:#64748b;">After this date, activate again from the payment page to create new calls.</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+<p style="margin:24px 0 0;text-align:center;font-size:12px;letter-spacing:0.15em;color:#d4af37;text-transform:uppercase;">
+  Powered by <strong style="color:#e7c766;">TechMagnetStudio</strong>
+</p>
+</body></html>

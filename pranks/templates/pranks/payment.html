@@ -1,0 +1,43 @@
+{% extends "pranks/base.html" %}
+{% block title %}Payment — {{ APP_NAME|default:"LineOne" }}{% endblock %}
+{% block body %}
+<main class="mx-auto w-full max-w-xl px-4 py-8">
+
+  <header class="mb-6 flex items-center justify-between">
+    <a href="{% url 'home' %}" class="flex items-center gap-2 text-slate-300"><svg class="icon"><use href="#i-arrow-left"/></svg> Back</a>
+    <span class="text-lg font-extrabold">{{ APP_NAME|default:"LineOne" }}</span>
+  </header>
+
+  {% if profile.has_active_access %}
+  <section class="rounded-3xl border border-emerald-500/40 bg-emerald-500/5 p-6 text-center">
+    <svg class="icon icon-lg text-emerald-400"><use href="#i-check"/></svg>
+    <h2 class="mt-2 text-xl font-bold">Access is active</h2>
+    <p class="mt-1 text-sm text-slate-300">Expires on {{ profile.access_expires_at|date:"M j, Y H:i" }} UTC</p>
+    <a href="{% url 'home' %}" class="mt-4 inline-block rounded-xl bg-emerald-500 px-4 py-2 font-bold text-slate-950">Continue</a>
+  </section>
+  {% else %}
+  <section class="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
+    <h1 class="text-2xl font-extrabold">Activate access</h1>
+    <p class="mt-1 text-sm text-slate-400">Pay $45 to activate 48 hours of access. After 48 hours you must renew to create new call links.</p>
+
+    <div class="mt-5 rounded-2xl border border-slate-700 bg-slate-950/60 p-4 text-sm space-y-1">
+      <p class="text-slate-400">Send $45 to:</p>
+      <p class="text-lg font-bold">Muhammed Opeoluwa Salaudeen</p>
+      <p class="font-mono text-emerald-300">9071524404</p>
+      <p class="text-slate-300">Opay</p>
+    </div>
+
+    {% if profile.activation_requested %}
+    <div class="mt-5 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
+      Your request was sent on {{ profile.activation_requested_at|date:"M j, Y H:i" }}. An admin will verify your payment and activate your account.
+    </div>
+    {% else %}
+    <form method="post" action="{% url 'payment_request' %}" class="mt-5">
+      {% csrf_token %}
+      <button class="w-full rounded-xl bg-emerald-500 py-3 font-bold text-slate-950">I have paid — request admin approval</button>
+    </form>
+    {% endif %}
+  </section>
+  {% endif %}
+</main>
+{% endblock %}

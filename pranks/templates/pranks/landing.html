@@ -1,0 +1,73 @@
+{% extends "pranks/base.html" %}
+{% block title %}{{ APP_NAME|default:"LineOne" }} — Private Video Calls{% endblock %}
+{% block body %}
+
+<header class="mx-auto w-full max-w-5xl px-4 py-6 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <svg class="icon icon-lg text-emerald-400"><use href="#i-phone"/></svg>
+    <span class="text-xl font-extrabold">{{ APP_NAME|default:"LineOne" }}</span>
+  </div>
+  <nav class="flex items-center gap-3 text-sm">
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="rounded-lg bg-emerald-500 px-4 py-2 font-bold text-slate-950">Dashboard</a>
+      <form method="post" action="{% url 'logout' %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="bg-transparent border-0 cursor-pointer text-slate-400 hover:text-white">Log out</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="text-slate-300 hover:text-white">Sign in</a>
+      <a href="{% url 'signup' %}" class="rounded-lg bg-emerald-500 px-4 py-2 font-bold text-slate-950">Create account</a>
+    {% endif %}
+  </nav>
+</header>
+
+<section class="mx-auto w-full max-w-5xl px-4 pt-6 pb-6 sm:pt-16">
+  <div class="text-center">
+    <div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-300">
+      <svg class="icon"><use href="#i-lock"/></svg> Private by design
+    </div>
+    <h1 class="mt-6 text-4xl font-black sm:text-6xl">
+      Video calls that stay<br class="hidden sm:block"/> in the <span class="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">right hands</span>.
+    </h1>
+    <p class="mx-auto mt-4 max-w-2xl text-base text-slate-300 sm:text-lg">
+      {{ APP_NAME|default:"LineOne" }} is a private calling link service. Design the call, share the link, and only the people you invited can open it.
+    </p>
+    <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}" class="rounded-xl bg-emerald-500 px-6 py-3 font-bold text-slate-950">Go to dashboard</a>
+        <a href="{% url 'payment' %}" class="rounded-xl border border-slate-700 px-6 py-3 font-semibold text-slate-200">Manage access</a>
+      {% else %}
+        <a href="{% url 'signup' %}" class="rounded-xl bg-emerald-500 px-6 py-3 font-bold text-slate-950">Create account</a>
+        <a href="{% url 'login' %}" class="rounded-xl border border-slate-700 px-6 py-3 font-semibold text-slate-200">Sign in</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-16 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
+      <svg class="icon icon-lg text-emerald-400"><use href="#i-phone"/></svg>
+      <h3 class="mt-3 text-lg font-bold">Design the call</h3>
+      <p class="mt-1 text-sm text-slate-400">Pick the look, the caller name, and the tone. Every detail is yours.</p>
+    </div>
+    <div class="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
+      <svg class="icon icon-lg text-emerald-400"><use href="#i-mail"/></svg>
+      <h3 class="mt-3 text-lg font-bold">Share the link</h3>
+      <p class="mt-1 text-sm text-slate-400">Send through WhatsApp, Telegram, SMS, or any messenger — with one tap.</p>
+    </div>
+    <div class="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
+      <svg class="icon icon-lg text-emerald-400"><use href="#i-lock"/></svg>
+      <h3 class="mt-3 text-lg font-bold">Only invited can open</h3>
+      <p class="mt-1 text-sm text-slate-400">Links are unique, private, and expire when you delete them.</p>
+    </div>
+  </div>
+
+  <div class="mt-16 rounded-3xl border border-slate-800 bg-slate-900/40 p-8 text-center">
+    <p class="text-sm text-slate-400">Whether for personal use or a business, {{ APP_NAME|default:"LineOne" }} puts you in control.</p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="mt-4 inline-block rounded-xl bg-emerald-500 px-6 py-3 font-bold text-slate-950">Go to dashboard</a>
+    {% else %}
+      <a href="{% url 'signup' %}" class="mt-4 inline-block rounded-xl bg-emerald-500 px-6 py-3 font-bold text-slate-950">Get started — $45 / 48 hours</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "pranks/base.html" %}
+{% block title %}Dashboard — {{ APP_NAME|default:"LineOne" }}{% endblock %}
+{% block body %}
+<main class="mx-auto w-full max-w-3xl px-4 py-6 sm:py-10">
+
+  <header class="mb-8 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <svg class="icon icon-lg text-emerald-400"><use href="#i-phone"/></svg>
+      <span class="text-2xl font-extrabold">{{ APP_NAME|default:"LineOne" }}</span>
+    </div>
+    <nav class="flex items-center gap-4 text-sm">
+      <span class="text-slate-400">Signed in as <strong class="text-slate-200">{{ user.username }}</strong></span>
+      <form method="post" action="{% url 'logout' %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="rounded-lg border border-slate-700 bg-slate-800/60 px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors">Log out</button>
+      </form>
+    </nav>
+  </header>
+
+  {% if profile and not profile.has_active_access %}
+  <section class="mb-6 rounded-3xl border border-amber-500/40 bg-amber-500/5 p-5">
+    <h2 class="text-lg font-bold flex items-center gap-2"><svg class="icon text-amber-300"><use href="#i-lock"/></svg> Access required</h2>
+    <p class="mt-1 text-sm text-slate-300">Your access has expired or is not yet active. Complete payment to create new call links.</p>
+    <a href="{% url 'payment' %}" class="mt-3 inline-block rounded-xl bg-amber-500 px-4 py-2 font-semibold text-slate-950">Go to payment</a>
+  </section>
+  {% endif %}
+
+  {% if link %}
+  <section class="mb-6 space-y-4 rounded-3xl border border-emerald-500/40 bg-emerald-500/5 p-5">
+    <h2 class="text-lg font-bold">Share your call link</h2>
+    <div class="flex gap-2">
+      <input id="link" readonly value="{{ link }}" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm">
+      <button onclick="navigator.clipboard.writeText('{{ link }}');this.textContent='✓'" class="rounded-xl bg-slate-700 px-4 font-semibold">Copy</button>
+    </div>
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 text-sm font-semibold text-center">
+      <a target="_blank" class="rounded-xl bg-[#25d366] py-3" href="https://wa.me/?text={{ link|urlencode }}">WhatsApp</a>
+      <a target="_blank" class="rounded-xl bg-[#2aabee] py-3" href="https://t.me/share/url?url={{ link|urlencode }}">Telegram</a>
+      <a target="_blank" class="rounded-xl bg-[#1877f2] py-3" href="https://www.facebook.com/sharer/sharer.php?u={{ link|urlencode }}">Facebook</a>
+      <a class="rounded-xl bg-slate-600 py-3" href="sms:?&body={{ link|urlencode }}">SMS</a>
+    </div>
+    <a href="{{ link }}" target="_blank" class="block text-center text-sm text-emerald-400 underline">Open the call page →</a>
+  </section>
+  {% endif %}
+
+  <form method="post" action="{% url 'dashboard' %}" enctype="multipart/form-data" class="space-y-5 rounded-3xl border border-slate-800 bg-slate-900/60 p-5">
+    {% csrf_token %}
+    <h2 class="text-lg font-bold">Design the call</h2>
+    {% for field in form %}
+      <div>
+        <label class="mb-1 block text-sm text-slate-400">{{ field.label }}</label>
+        {% if field.field.widget.input_type == "radio" %}
+          <div class="space-y-2">
+            {% for choice in field %}
+              <label class="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 cursor-pointer hover:bg-slate-800/70 transition-colors">
+                {{ choice.tag }}
+                <span class="text-sm">{{ choice.choice_label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        {% elif field.field.widget.input_type == "file" %}
+          <input type="file" name="{{ field.name }}" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-slate-200 hover:file:bg-slate-600">
+        {% else %}
+          <div class="[&_input]:w-full [&_select]:w-full [&_textarea]:w-full [&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl [&_input]:border [&_select]:border [&_textarea]:border [&_input]:border-slate-700 [&_select]:border-slate-700 [&_textarea]:border-slate-700 [&_input]:bg-slate-900 [&_select]:bg-slate-900 [&_textarea]:bg-slate-900 [&_input]:px-4 [&_select]:px-4 [&_textarea]:px-4 [&_input]:py-3 [&_select]:py-3 [&_textarea]:py-3">{{ field }}</div>
+        {% endif %}
+        {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text|safe }}</p>{% endif %}
+        {% for e in field.errors %}<p class="text-sm text-red-400">{{ e }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button class="w-full rounded-xl bg-emerald-500 py-4 text-lg font-bold text-slate-950">Create call link</button>
+  </form>
+
+  {% if mine %}
+  <section class="mt-6 rounded-3xl border border-slate-800 bg-slate-900/60 p-5">
+    <h2 class="mb-4 text-lg font-bold">My calls ({{ mine|length }})</h2>
+    <ul class="space-y-2">
+      {% for p in mine %}
+      <li class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-800/60 px-4 py-3">
+        <div>
+          <p class="font-semibold">{{ p.caller_name }} <span class="text-xs text-slate-400">({{ p.get_style_display }})</span></p>
+          <p class="text-xs text-slate-400">{{ p.views }} opened · {{ p.answers }} answered · created {{ p.created_at|date:"M j, Y" }}</p>
+        </div>
+        <div class="flex gap-2 text-sm">
+          <a href="/dashboard/?created={{ p.id }}" class="rounded-lg bg-slate-700 px-3 py-1.5">Share</a>
+          <form method="post" action="{% url 'delete' p.id %}">{% csrf_token %}<button class="rounded-lg bg-red-500/20 px-3 py-1.5 text-red-300">Delete</button></form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% else %}
+  <p class="mt-6 text-center text-sm text-slate-500">You haven't created any calls yet.</p>
+  {% endif %}
+
+  <p class="mt-10 text-center text-xs text-slate-500">Only call people who have agreed to receive a call.</p>
+</main>
+{% endblock %}
